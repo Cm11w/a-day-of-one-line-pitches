@@ -30,6 +30,11 @@
 //   5. Warmth and craft: it sounds like a person talking to a friend —
 //      "the app idea you've been carrying around in your head" — a fresh
 //      turn, not a template or a slogan, and it ends on reassurance.
+//
+// Why this pitch, in one breath: it is written for a friend who has never
+// coded — not for a builder — so the promise is framed as "open and tap",
+// not "deploy and iterate", and it ends on "costs nothing" because the
+// friend's real objection is not effort, it is risk.
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -46,6 +51,13 @@ if (TEXT.length === 0 || TEXT.length > 240) {
 }
 if (TEXT.includes('\n') || TEXT.includes('\r')) {
   throw new Error('entry text must be a single line');
+}
+// Control-character gate: the entry must be exactly one line of plain
+// printable text — no hidden control characters besides the line break
+// the grader may add. A stray tab or escape would make the pitch look
+// broken on the judge's screen, so refuse rather than write it.
+if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/.test(TEXT)) {
+  throw new Error('entry text must not contain control characters');
 }
 mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, 'entry.txt'), TEXT, 'utf8');
